@@ -1,0 +1,25 @@
+From: Ghislain Antony Vaillant <ghisvail@gmail.com>
+Date: Fri, 23 Oct 2015 09:54:50 +0100
+Subject: Fix HDF5 detection in CMake find module
+
+---
+ cmake/modules/FindHDF5.cmake | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/cmake/modules/FindHDF5.cmake b/cmake/modules/FindHDF5.cmake
+index e311912..9cf6031 100644
+--- a/cmake/modules/FindHDF5.cmake
++++ b/cmake/modules/FindHDF5.cmake
+@@ -1,9 +1,9 @@
+ # - Find HDF5, a library for reading and writing self describing array data.
+ #
+-FIND_PATH(HDF5_INCLUDE_DIR hdf5.h)
++FIND_PATH(HDF5_INCLUDE_DIR hdf5.h HINTS /usr/include/hdf5/serial)
+ 
+-FIND_LIBRARY(HDF5_CORE_LIBRARY NAMES hdf5dll hdf5  )
+-FIND_LIBRARY(HDF5_HL_LIBRARY NAMES hdf5_hldll hdf5_hl  )
++FIND_LIBRARY(HDF5_CORE_LIBRARY NAMES hdf5dll hdf5_serial  )
++FIND_LIBRARY(HDF5_HL_LIBRARY NAMES hdf5_hldll hdf5_serial_hl  )
+ FIND_LIBRARY(HDF5_CPP_LIBRARY NAMES hdf5_cppdll hdf5_cpp )
+ 
+ IF(WIN32 AND HDF5_CORE_LIBRARY MATCHES "dll.lib$")
