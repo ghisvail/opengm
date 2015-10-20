@@ -1,13 +1,69 @@
 #!/usr/bin/make -f
-# You must remove unused comment lines for the released package.
+
+# Uncomment this to turn on verbose mode.
 #export DH_VERBOSE = 1
-#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
-#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+# Hardening options.
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_CFLAGS_MAINT_APPEND = -Wall -pedantic
+export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
+
+# Build options.
+BUILD_OPTIONS = \
+	-DBUILD_EXAMPLES=OFF \
+	-DBUILD_TUTORIALS=OFF \
+	-DBUILD_COMMANDLINE=ON \
+	-DWITH_BOOST=ON \
+	-DWITH_HDF5=ON \
+	-DWITH_OPENMP=ON \
+	-DWITH_VIGRA=ON \
+	-DBUILD_CONVERTER=ON \
+	-DBUILD_PYTHON_WRAPPER=ON
+
+# Disable build of testsuite if nocheck is passed.
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	BUILD_OPTIONS += -DBUILD_TESTING=ON
+else
+	BUILD_OPTIONS += -DBUILD_TESTING=OFF
+endif
+
+# Exclude buggy test cases.
+CTEST_EXCLUDE_REGEX = 
 
 %:
-	dh $@ --with python2 
+	dh $@ --parallel --with python2 
 
-#override_dh_auto_configure:
-#	dh_auto_configure -- \
-#	      -DCMAKE_LIBRARY_ARCHITECTURE="$(DEB_TARGET_MULTIARCH)"
+override_dh_auto_configure-arch:
+	dh_auto_configure -- \
+		$(BUILD_OPTIONS) \
+		-DBUILD_DOCS=OFF \
+		-DBUILD_PYTHON_DOCS=OFF
+
+override_dh_auto_configure-indep:
+	dh_auto_configure -- \
+		$(BUILD_OPTIONS) \
+		-DBUILD_DOCS=ON \
+		-DBUILD_PYTHON_DOCS=ON
+
+override_dh_auto_install-arch:
+	dh_auto_install --arch
+	dh_numpy --package=python-opengm
+
+override_dh_auto_test-arch:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	# Run library testsuite.
+	cd obj-* && \
+	CTEST_OUTPUT_ON_FAILURE=1 ctest --force-new-ctest-process \
+		-E "$(CTEST_EXCLUDE_REGEX)"
+	# Run Python testsuite.
+	cd obj-* && \
+	make test-python-wrapper
+endif
+
+override_dh_auto_test-indep:
+	# Pass.
+
+override_dh_installdocs-indep:
+	dh_installdocs --indep
+	dh_doxygen --package=libopengm-doc
+	dh_sphinxdoc --package=python-opengm-doc
