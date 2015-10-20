@@ -1,0 +1,5 @@
+opengm (2.3.5-1) UNRELEASED; urgency=low
+
+  * Initial release. Closes: #801971
+
+ -- Ghislain Antony Vaillant <ghisvail@gmail.com>  Tue, 20 Oct 2015 18:20:38 +0100
