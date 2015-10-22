@@ -1,0 +1,21 @@
+From: Ghislain Antony Vaillant <ghisvail@gmail.com>
+Date: Fri, 23 Oct 2015 09:54:51 +0100
+Subject: Disable usage of HTML timestamp in Doxygen settings
+
+---
+ Doxyfile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Doxyfile.in b/Doxyfile.in
+index 50933e7..dfe425f 100644
+--- a/Doxyfile.in
++++ b/Doxyfile.in
+@@ -899,7 +899,7 @@ HTML_COLORSTYLE_GAMMA  = 80
+ # page will contain the date and time when the page was generated. Setting 
+ # this to NO can help when comparing the output of multiple runs.
+ 
+-HTML_TIMESTAMP         = YES
++HTML_TIMESTAMP         = NO
+ 
+ # If the HTML_ALIGN_MEMBERS tag is set to YES, the members of classes, 
+ # files or namespaces will be aligned in HTML using tables. If set to 
